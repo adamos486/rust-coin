@@ -35,6 +35,9 @@ impl WalletTracker {
         Ok(())
     }
 
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_precision_loss)]
     pub fn balance_in_satoshis(&self) -> u64 {
         const SATOSHI_PER_BTC: u64 = 100_000_000;
         (self.balance_btc * SATOSHI_PER_BTC as f64) as u64

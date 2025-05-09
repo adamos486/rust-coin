@@ -1,5 +1,6 @@
 mod learning;
 use learning::wallet::WalletTracker;
+use learning::primitives::Primitives;
 
 fn main() {
     println!("Bitcoin Wallet Balance Tracker");
@@ -12,12 +13,12 @@ fn main() {
     my_wallet.receive(0.25);
     my_wallet.display_info();
     match my_wallet.send(0.1, 0.0005) {
-        Ok(_) => println!("Transaction successful!"),
-        Err(e) => println!("Transaction failed: {}", e),
+        Ok(()) => println!("Transaction successful!"),
+        Err(e) => println!("Transaction failed: {e}"),
     }
     match my_wallet.send(1.0, 0.0001) {
-        Ok(_) => println!("Transaction successful!"),
-        Err(e) => println!("Transaction failed: {}", e),
+        Ok(()) => println!("Transaction successful!"),
+        Err(e) => println!("Transaction failed: {e}"),
     }
     my_wallet.display_info();
     let mut test_wallet = WalletTracker::new(
@@ -27,4 +28,6 @@ fn main() {
     );
     test_wallet.receive(0.5);
     test_wallet.display_info();
+
+    Primitives::explore_integers();
 }

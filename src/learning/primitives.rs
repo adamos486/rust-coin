@@ -151,6 +151,33 @@ impl Primitives {
         println!("Is '🦀' a symbol? {}", z_crab.is_ascii());
     }
 
+    pub fn explore_compound_types() {
+        println!("\nCOMPOUND TYPES\n---------------");
+
+        println!("Tuples:");
+        let tuple: (i32, f64, char) = (42, std::f64::consts::PI, 'A');
+        println!("A tuple with different types: {tuple:?}");
+        println!("Accessing tuple elements: {}, {}, {}", tuple.0, tuple.1, tuple.2);
+
+        let (x, y, z) = tuple;
+        println!("Destructured values: {x}, {y}, {z}");
+
+        println!("\nArrays:");
+        let array: [i32; 5] = [1, 2, 3, 4, 5];
+        let repeated: [i32; 3] = [0; 3];
+        println!("An array: {array:?}");
+        println!("A repeated array: {repeated:?}");
+        println!("Array length: {}", array.len());
+        println!("First element: {}", array[0]);
+        println!("Last element: {}", array[array.len() - 1]);
+        println!("Accessing array elements: {}, {}, {}", array[0], array[1], array[2]);
+
+        println!("\nSlices:");
+        let slice: &[i32] = &array[1..4];
+        println!("Slice from array: {slice:?}");
+        println!("Slice length: {}", slice.len());
+    }
+
     // Helper functions for testing
     #[cfg(test)]
     fn get_max_i8() -> i8 {
@@ -418,6 +445,112 @@ impl Primitives {
     #[cfg(test)]
     fn char_to_unicode(c: char) -> u32 {
         c as u32
+    }
+
+    // Helper functions for compound types
+    #[cfg(test)]
+    fn create_tuple() -> (i32, f64, char) {
+        (42, std::f64::consts::PI, 'A')
+    }
+
+    #[cfg(test)]
+    fn get_tuple_first(tuple: (i32, f64, char)) -> i32 {
+        tuple.0
+    }
+
+    #[cfg(test)]
+    fn get_tuple_second(tuple: (i32, f64, char)) -> f64 {
+        tuple.1
+    }
+
+    #[cfg(test)]
+    fn get_tuple_third(tuple: (i32, f64, char)) -> char {
+        tuple.2
+    }
+
+    #[cfg(test)]
+    fn create_array() -> [i32; 5] {
+        [1, 2, 3, 4, 5]
+    }
+
+    #[cfg(test)]
+    fn create_repeated_array(value: i32, length: usize) -> Vec<i32> {
+        vec![value; length]
+    }
+
+    #[cfg(test)]
+    fn get_array_element(arr: &[i32], index: usize) -> Option<i32> {
+        arr.get(index).copied()
+    }
+
+    #[cfg(test)]
+    fn get_array_slice(arr: &[i32], start: usize, end: usize) -> &[i32] {
+        &arr[start..end]
+    }
+
+    #[cfg(test)]
+    fn sum_array(arr: &[i32]) -> i32 {
+        arr.iter().sum()
+    }
+
+    #[cfg(test)]
+    fn concatenate_arrays(arr1: &[i32], arr2: &[i32]) -> Vec<i32> {
+        let mut result = Vec::with_capacity(arr1.len() + arr2.len());
+        result.extend_from_slice(arr1);
+        result.extend_from_slice(arr2);
+        result
+    }
+
+    // Helper functions for string operations
+    #[cfg(test)]
+    fn string_length(s: &str) -> usize {
+        s.len()
+    }
+
+    #[cfg(test)]
+    fn string_char_count(s: &str) -> usize {
+        s.chars().count()
+    }
+
+    #[cfg(test)]
+    fn string_concatenate(s1: &str, s2: &str) -> String {
+        format!("{}{}", s1, s2)
+    }
+
+    #[cfg(test)]
+    fn string_contains(s: &str, substring: &str) -> bool {
+        s.contains(substring)
+    }
+
+    #[cfg(test)]
+    fn string_to_uppercase(s: &str) -> String {
+        s.to_uppercase()
+    }
+
+    #[cfg(test)]
+    fn string_to_lowercase(s: &str) -> String {
+        s.to_lowercase()
+    }
+
+    // Helper functions for type conversions
+    #[cfg(test)]
+    fn i32_to_f64(i: i32) -> f64 {
+        i as f64
+    }
+
+    #[cfg(test)]
+    fn f64_to_i32(f: f64) -> i32 {
+        f as i32
+    }
+
+    #[cfg(test)]
+    fn i32_to_string(i: i32) -> String {
+        i.to_string()
+    }
+
+    #[cfg(test)]
+    fn string_to_i32(s: &str) -> Result<i32, std::num::ParseIntError> {
+        s.parse::<i32>()
     }
 }
 
@@ -779,5 +912,142 @@ mod tests {
 
         let emoji = "🦀";
         assert_eq!(emoji.chars().next().unwrap(), '🦀');
+    }
+
+    // Tests for explore_compound_types
+    #[test]
+    fn test_explore_compound_types_does_not_panic() {
+        // This test just ensures the function doesn't panic
+        Primitives::explore_compound_types();
+    }
+
+    #[test]
+    fn test_tuple_operations() {
+        let tuple = Primitives::create_tuple();
+
+        // Test tuple access
+        assert_eq!(Primitives::get_tuple_first(tuple), 42);
+        assert_eq!(Primitives::get_tuple_second(tuple), std::f64::consts::PI);
+        assert_eq!(Primitives::get_tuple_third(tuple), 'A');
+
+        // Test tuple destructuring
+        let (x, y, z) = tuple;
+        assert_eq!(x, 42);
+        assert_eq!(y, std::f64::consts::PI);
+        assert_eq!(z, 'A');
+    }
+
+    #[test]
+    fn test_array_operations() {
+        let array = Primitives::create_array();
+
+        // Test array access
+        assert_eq!(array[0], 1);
+        assert_eq!(array[4], 5);
+
+        // Test array length
+        assert_eq!(array.len(), 5);
+
+        // Test safe access with get
+        assert_eq!(Primitives::get_array_element(&array, 2), Some(3));
+        assert_eq!(Primitives::get_array_element(&array, 10), None); // Out of bounds
+
+        // Test slicing
+        let slice = Primitives::get_array_slice(&array, 1, 4);
+        assert_eq!(slice, &[2, 3, 4]);
+
+        // Test sum
+        assert_eq!(Primitives::sum_array(&array), 15); // 1 + 2 + 3 + 4 + 5 = 15
+    }
+
+    #[test]
+    fn test_array_creation() {
+        // Test creating a repeated array
+        let repeated = Primitives::create_repeated_array(42, 3);
+        assert_eq!(repeated, vec![42, 42, 42]);
+
+        // Test array concatenation
+        let arr1 = [1, 2, 3];
+        let arr2 = [4, 5, 6];
+        let concatenated = Primitives::concatenate_arrays(&arr1, &arr2);
+        assert_eq!(concatenated, vec![1, 2, 3, 4, 5, 6]);
+    }
+
+    #[test]
+    fn test_array_bounds_checking() {
+        let array = Primitives::create_array();
+
+        // Using get() for safe access
+        assert!(array.get(10).is_none());
+
+        // Test in-bounds access
+        assert!(array.get(0).is_some());
+        assert!(array.get(4).is_some());
+
+        // Test length
+        assert_eq!(array.len(), 5);
+    }
+
+    // Tests for string operations
+    #[test]
+    fn test_string_operations() {
+        // Test string length
+        assert_eq!(Primitives::string_length("hello"), 5);
+        assert_eq!(Primitives::string_length("🦀"), 4); // UTF-8 encoded length
+
+        // Test character count
+        assert_eq!(Primitives::string_char_count("hello"), 5);
+        assert_eq!(Primitives::string_char_count("🦀"), 1); // One Unicode character
+
+        // Test string concatenation
+        assert_eq!(Primitives::string_concatenate("hello", " world"), "hello world");
+
+        // Test string contains
+        assert!(Primitives::string_contains("hello world", "world"));
+        assert!(!Primitives::string_contains("hello world", "rust"));
+
+        // Test case conversion
+        assert_eq!(Primitives::string_to_uppercase("hello"), "HELLO");
+        assert_eq!(Primitives::string_to_lowercase("HELLO"), "hello");
+    }
+
+    // Tests for type conversions
+    #[test]
+    fn test_numeric_type_conversions() {
+        // Test integer to float conversion
+        assert_eq!(Primitives::i32_to_f64(42), 42.0);
+
+        // Test float to integer conversion (truncation)
+        assert_eq!(Primitives::f64_to_i32(42.9), 42);
+        assert_eq!(Primitives::f64_to_i32(-42.9), -42);
+    }
+
+    #[test]
+    fn test_string_conversions() {
+        // Test integer to string conversion
+        assert_eq!(Primitives::i32_to_string(42), "42");
+        assert_eq!(Primitives::i32_to_string(-42), "-42");
+
+        // Test string to integer conversion
+        assert_eq!(Primitives::string_to_i32("42"), Ok(42));
+        assert_eq!(Primitives::string_to_i32("-42"), Ok(-42));
+        assert!(Primitives::string_to_i32("not a number").is_err());
+    }
+
+    #[test]
+    fn test_integer_operations_with_negative_numbers() {
+        // Test operations with negative numbers
+        assert_eq!(Primitives::add_integers(-10, -5), -15);
+        assert_eq!(Primitives::subtract_integers(-10, 5), -15);
+        assert_eq!(Primitives::multiply_integers(-10, -5), 50);
+        assert_eq!(Primitives::multiply_integers(-10, 5), -50);
+        assert_eq!(Primitives::divide_integers(-10, 5), -2);
+        assert_eq!(Primitives::remainder_integers(-10, 3), -1);
+    }
+
+    #[test]
+    #[should_panic(expected = "attempt to divide by zero")]
+    fn test_division_by_zero() {
+        Primitives::divide_integers(10, 0);
     }
 }

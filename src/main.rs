@@ -30,4 +30,7 @@ fn main() {
     test_wallet.display_info();
 
     Primitives::explore_integers();
+    Primitives::explore_floating_point();
+    Primitives::explore_booleans();
+    Primitives::explore_characters();
 }

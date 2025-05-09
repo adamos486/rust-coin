@@ -142,6 +142,13 @@ impl Primitives {
         println!("'z' as Unicode: U+{:04X}", c as u32);
         println!("'🦀' as Unicode: U+{:04X}", z_crab as u32);
         println!("'❤' as Unicode: U+{:04X}", heart as u32);
+
+        println!("\nCharacter methods:");
+        println!("Is 'z' alphabetic? {}", c.is_alphabetic());
+        println!("Is 'z' numeric? {}", c.is_numeric());
+        println!("Is 'z' whitespace? {}", c.is_whitespace());
+        println!("Is '🦀' alphabetic? {}", z_crab.is_alphabetic());
+        println!("Is '🦀' a symbol? {}", z_crab.is_ascii());
     }
 
     // Helper functions for testing
@@ -151,8 +158,58 @@ impl Primitives {
     }
 
     #[cfg(test)]
+    fn get_min_i8() -> i8 {
+        i8::MIN
+    }
+
+    #[cfg(test)]
     fn get_max_u8() -> u8 {
         u8::MAX
+    }
+
+    #[cfg(test)]
+    fn get_min_u8() -> u8 {
+        u8::MIN
+    }
+
+    #[cfg(test)]
+    fn bitwise_and(a: u8, b: u8) -> u8 {
+        a & b
+    }
+
+    #[cfg(test)]
+    fn bitwise_or(a: u8, b: u8) -> u8 {
+        a | b
+    }
+
+    #[cfg(test)]
+    fn bitwise_xor(a: u8, b: u8) -> u8 {
+        a ^ b
+    }
+
+    #[cfg(test)]
+    fn bitwise_not(a: u8) -> u8 {
+        !a
+    }
+
+    #[cfg(test)]
+    fn left_shift(a: u8, b: u32) -> u8 {
+        a << b
+    }
+
+    #[cfg(test)]
+    fn right_shift(a: u8, b: u32) -> u8 {
+        a >> b
+    }
+
+    #[cfg(test)]
+    fn checked_add(a: u8, b: u8) -> Option<u8> {
+        a.checked_add(b)
+    }
+
+    #[cfg(test)]
+    fn saturating_add(a: u8, b: u8) -> u8 {
+        a.saturating_add(b)
     }
 
     #[cfg(test)]
@@ -233,6 +290,82 @@ impl Primitives {
     }
 
     #[cfg(test)]
+    fn float_epsilon_comparison(a: f64, b: f64, epsilon: f64) -> bool {
+        (a - b).abs() < epsilon
+    }
+
+    #[cfg(test)]
+    fn float_ulp_comparison(a: f64, b: f64, ulps: i64) -> bool {
+        // A simple ULP (Units in the Last Place) comparison
+        // This is a more sophisticated way to compare floating point numbers
+        let a_bits = a.to_bits() as i64;
+        let b_bits = b.to_bits() as i64;
+
+        // Handle special cases like NaN and infinities
+        if a.is_nan() || b.is_nan() {
+            return false;
+        }
+
+        if a.is_infinite() && b.is_infinite() {
+            return a.is_sign_positive() == b.is_sign_positive();
+        }
+
+        // Handle zero
+        if a == 0.0 && b == 0.0 {
+            return true;
+        }
+
+        // Make sure a and b have the same sign
+        if (a_bits < 0) != (b_bits < 0) {
+            return false;
+        }
+
+        // Calculate the difference in ULPs
+        let diff = (a_bits - b_bits).abs();
+        diff <= ulps
+    }
+
+    #[cfg(test)]
+    fn get_min_positive_f64() -> f64 {
+        f64::MIN_POSITIVE
+    }
+
+    #[cfg(test)]
+    fn get_max_f64() -> f64 {
+        f64::MAX
+    }
+
+    #[cfg(test)]
+    fn is_char_alphabetic(c: char) -> bool {
+        c.is_alphabetic()
+    }
+
+    #[cfg(test)]
+    fn is_char_numeric(c: char) -> bool {
+        c.is_numeric()
+    }
+
+    #[cfg(test)]
+    fn is_char_whitespace(c: char) -> bool {
+        c.is_whitespace()
+    }
+
+    #[cfg(test)]
+    fn is_char_ascii(c: char) -> bool {
+        c.is_ascii()
+    }
+
+    #[cfg(test)]
+    fn char_to_lowercase(c: char) -> char {
+        c.to_lowercase().next().unwrap()
+    }
+
+    #[cfg(test)]
+    fn char_to_uppercase(c: char) -> char {
+        c.to_uppercase().next().unwrap()
+    }
+
+    #[cfg(test)]
     fn logical_and(a: bool, b: bool) -> bool {
         a && b
     }
@@ -303,6 +436,8 @@ mod tests {
     fn test_integer_max_values() {
         assert_eq!(Primitives::get_max_i8(), 127);
         assert_eq!(Primitives::get_max_u8(), 255);
+        assert_eq!(Primitives::get_min_i8(), -128);
+        assert_eq!(Primitives::get_min_u8(), 0);
     }
 
     #[test]
@@ -321,6 +456,40 @@ mod tests {
     fn test_integer_wrapping() {
         let max_u8 = u8::MAX; // 255
         assert_eq!(Primitives::wrapping_add_u8(max_u8, 1), 0);
+    }
+
+    #[test]
+    fn test_bitwise_operations() {
+        // Test AND
+        assert_eq!(Primitives::bitwise_and(0b1010, 0b1100), 0b1000);
+
+        // Test OR
+        assert_eq!(Primitives::bitwise_or(0b1010, 0b1100), 0b1110);
+
+        // Test XOR
+        assert_eq!(Primitives::bitwise_xor(0b1010, 0b1100), 0b0110);
+
+        // Test NOT
+        assert_eq!(Primitives::bitwise_not(0b00000000), 0b11111111);
+        assert_eq!(Primitives::bitwise_not(0b11111111), 0b00000000);
+
+        // Test shifts
+        assert_eq!(Primitives::left_shift(0b00000001, 1), 0b00000010);
+        assert_eq!(Primitives::left_shift(0b00000001, 7), 0b10000000);
+
+        assert_eq!(Primitives::right_shift(0b10000000, 1), 0b01000000);
+        assert_eq!(Primitives::right_shift(0b10000000, 7), 0b00000001);
+    }
+
+    #[test]
+    fn test_checked_and_saturating_operations() {
+        // Test checked_add
+        assert_eq!(Primitives::checked_add(200, 56), None); // Would overflow
+        assert_eq!(Primitives::checked_add(200, 50), Some(250));
+
+        // Test saturating_add
+        assert_eq!(Primitives::saturating_add(200, 100), 255); // Saturates at max
+        assert_eq!(Primitives::saturating_add(100, 50), 150); // Normal addition
     }
 
     #[test]
@@ -378,6 +547,49 @@ mod tests {
         assert!(f32::NAN.is_nan());
     }
 
+    #[test]
+    fn test_float_comparison_methods() {
+        // Test epsilon comparison
+        let a = 0.1 + 0.2;
+        let b = 0.3;
+
+        // Direct comparison will likely fail due to floating point precision
+        assert!(a != b);
+
+        // Epsilon comparison should pass
+        assert!(Primitives::float_epsilon_comparison(a, b, 1e-10));
+
+        // ULP comparison should also pass
+        assert!(Primitives::float_ulp_comparison(a, b, 2));
+
+        // Test with values that are further apart
+        assert!(!Primitives::float_epsilon_comparison(0.1, 0.10001, 1e-6));
+        assert!(Primitives::float_epsilon_comparison(0.1, 0.10001, 1e-4));
+    }
+
+    #[test]
+    fn test_float_limits() {
+        // Test minimum positive value
+        let min_positive = Primitives::get_min_positive_f64();
+        assert!(min_positive > 0.0);
+        assert!(min_positive / 2.0 < min_positive); // Underflow to subnormal or zero
+
+        // Test maximum value
+        let max_value = Primitives::get_max_f64();
+        assert!(max_value.is_finite());
+        assert!((max_value * 2.0).is_infinite()); // Overflow to infinity
+    }
+
+    #[test]
+    fn test_float_rounding_errors() {
+        // Demonstrate rounding errors in floating point
+        let sum = (0..10).map(|_| 0.1).sum::<f64>();
+        assert!(sum != 1.0); // Due to rounding errors
+
+        // But it should be close
+        assert!((sum - 1.0).abs() < 1e-10);
+    }
+
     // Tests for explore_booleans
     #[test]
     fn test_explore_booleans_does_not_panic() {
@@ -399,6 +611,48 @@ mod tests {
 
         assert_eq!(Primitives::logical_not(true), false);
         assert_eq!(Primitives::logical_not(false), true);
+    }
+
+    #[test]
+    fn test_short_circuit_evaluation() {
+        // In Rust, boolean operations short-circuit
+
+        // For AND, if the first operand is false, the second is not evaluated
+        let mut counter = 0;
+        let result = false && {
+            counter += 1;
+            true
+        };
+        assert_eq!(result, false);
+        assert_eq!(counter, 0); // Second operand was not evaluated
+
+        // For OR, if the first operand is true, the second is not evaluated
+        let mut counter = 0;
+        let result = true || {
+            counter += 1;
+            false
+        };
+        assert_eq!(result, true);
+        assert_eq!(counter, 0); // Second operand was not evaluated
+    }
+
+    #[test]
+    fn test_complex_boolean_expressions() {
+        // Test more complex boolean expressions
+
+        // De Morgan's laws
+        let a = true;
+        let b = false;
+
+        // !(a && b) == !a || !b
+        assert_eq!(!(a && b), !a || !b);
+
+        // !(a || b) == !a && !b
+        assert_eq!(!(a || b), !a && !b);
+
+        // Test precedence: && has higher precedence than ||
+        assert_eq!(true || false && false, true); // Equivalent to: true || (false && false)
+        assert_eq!((true || false) && false, false);
     }
 
     #[test]
@@ -469,5 +723,61 @@ mod tests {
         // Test numeric to char conversions
         assert_eq!(char::from(65), 'A');
         assert_eq!(char::from(48), '0');
+    }
+
+    #[test]
+    fn test_char_properties() {
+        // Test alphabetic property
+        assert!(Primitives::is_char_alphabetic('a'));
+        assert!(Primitives::is_char_alphabetic('Z'));
+        assert!(!Primitives::is_char_alphabetic('1'));
+        assert!(!Primitives::is_char_alphabetic(' '));
+
+        // Test numeric property
+        assert!(Primitives::is_char_numeric('1'));
+        assert!(Primitives::is_char_numeric('0'));
+        assert!(!Primitives::is_char_numeric('a'));
+        assert!(!Primitives::is_char_numeric(' '));
+
+        // Test whitespace property
+        assert!(Primitives::is_char_whitespace(' '));
+        assert!(Primitives::is_char_whitespace('\t'));
+        assert!(Primitives::is_char_whitespace('\n'));
+        assert!(!Primitives::is_char_whitespace('a'));
+
+        // Test ASCII property
+        assert!(Primitives::is_char_ascii('a'));
+        assert!(Primitives::is_char_ascii('1'));
+        assert!(Primitives::is_char_ascii(' '));
+        assert!(!Primitives::is_char_ascii('🦀'));
+    }
+
+    #[test]
+    fn test_char_case_conversion() {
+        // Test lowercase conversion
+        assert_eq!(Primitives::char_to_lowercase('A'), 'a');
+        assert_eq!(Primitives::char_to_lowercase('Z'), 'z');
+        assert_eq!(Primitives::char_to_lowercase('a'), 'a'); // Already lowercase
+        assert_eq!(Primitives::char_to_lowercase('1'), '1'); // Not a letter
+
+        // Test uppercase conversion
+        assert_eq!(Primitives::char_to_uppercase('a'), 'A');
+        assert_eq!(Primitives::char_to_uppercase('z'), 'Z');
+        assert_eq!(Primitives::char_to_uppercase('A'), 'A'); // Already uppercase
+        assert_eq!(Primitives::char_to_uppercase('1'), '1'); // Not a letter
+    }
+
+    #[test]
+    fn test_char_string_conversion() {
+        // Test char to string conversion
+        assert_eq!('a'.to_string(), "a");
+        assert_eq!('🦀'.to_string(), "🦀");
+
+        // Test string to char conversion (for single character strings)
+        let s = "a";
+        assert_eq!(s.chars().next().unwrap(), 'a');
+
+        let emoji = "🦀";
+        assert_eq!(emoji.chars().next().unwrap(), '🦀');
     }
 }

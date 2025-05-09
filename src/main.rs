@@ -33,4 +33,5 @@ fn main() {
     Primitives::explore_floating_point();
     Primitives::explore_booleans();
     Primitives::explore_characters();
+    Primitives::explore_compound_types();
 }

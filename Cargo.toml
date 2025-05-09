@@ -1,0 +1,20 @@
+[package]
+name = "rust-coin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-std = "1.13.1"
+bincode = "2.0.1"
+bitcoin_hashes = "0.16.0"
+futures = "0.3.31"
+hmac = "0.12.1"
+hyper = "1.6.0"
+rand = "0.9.1"
+ripemd160 = "0.10.0"
+rocksdb = "0.23.0"
+secp256k1 = "0.31.0"
+serde = "1.0.219"
+sha2 = "0.10.9"
+sled = "0.34.7"
+tokio = "1.45.0"

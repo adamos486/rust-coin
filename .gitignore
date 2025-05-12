@@ -1,3 +1,8 @@
 /target
 .env
 src/learning/rust-ownership-project.rs
+/.roomodes
+/.roo
+/agents
+/framework
+/templates
